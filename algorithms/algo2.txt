@@ -1,0 +1,5 @@
+function SELECTION_SORT(A)
+     n = length(A)
+     for i = 0 to n - 1 do
+         min = MinIndex(A, i, n)
+         SWAP(A[i], A[min])

@@ -1,0 +1,6 @@
+function MinIndex(A, start, end)
+     min = 0
+     for i = start to end do
+         if A[min] > A[i] then
+             min = i
+     return min
