@@ -88,7 +88,7 @@ def scan_tokens(input_file, possible_tokens):
                 token = scanner.scan()
                 if token.type == 'EOF':
                     break
-                tokens.append(token)
+                tokens.append((token.type, token.value))
         except Exception as e:
             print(e)
         return tokens
