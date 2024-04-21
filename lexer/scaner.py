@@ -93,11 +93,3 @@ def scan_tokens(input_file, possible_tokens):
             print(e)
         return tokens
     
-def main():
-    input_file = input("Please enter file name: ")
-    tokens_list = scan_tokens("algorithms/"+input_file, tokens_dict)
-    for token in tokens_list:
-        print(token)
-    return tokens_list
-
-main()
