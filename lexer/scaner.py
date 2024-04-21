@@ -98,5 +98,6 @@ def main():
     tokens_list = scan_tokens("algorithms/"+input_file, tokens_dict)
     for token in tokens_list:
         print(token)
+    return tokens_list
 
 main()
