@@ -39,51 +39,42 @@ Nasz projekt to prosty język do nauki algorytmów, który ma na celu stworzenie
 
 ## Gramatyka
 ```g4
-program: function+;
+program: (function | statement)+ TOK_EOF;
 
-function: 'function' identifier '(' parameterList? ')' block;
+function: TOK_FUNC TOK_VAR TOK_ARG_L arguments? TOK_ARG_R statement;
 
-parameterList: identifier (',' identifier)*;
+arguments: TOK_VAR (',' TOK_VAR)*;
 
-block: statement+;
+statement: assignment | for_loop | if_statement | return_statement | function_call | TOK_NL;
 
-statement:
-	assignment
-	| ifStatement
-	| forStatement
-	| whileStatement
-	| returnStatement;
+assignment: TOK_VAR TOK_ASSIGN expression;
 
-assignment:
-	identifier ('TOK_TAB_L' (identifier | NUM) 'TOK_TAB_R')? 'TOK_ASSIGN' expression ';';
+for_loop: TOK_FOR TOK_VAR TOK_ASSIGN expression TOK_TO expression TOK_DO statement;
 
-ifStatement: 'if' expression 'then' block ('else' block)?;
+if_statement: TOK_IF expression TOK_THEN statement;
 
-forStatement:
-	'for' identifier 'TOK_ASSIGN' expression 'to' expression 'do' block;
+return_statement: TOK_RETURN expression;
 
-whileStatement: 'while' expression 'do' block;
+function_call: TOK_VAR TOK_ARG_L expression_list? TOK_ARG_R;
 
-returnStatement: 'return' expression ';';
+expression_list: expression (',' expression)*;
 
-expression:
-	expression (
-		TOK_PLUS
-		| TOK_MINUS
-		| TOK_MUL
-		| TOK_DIV
-		| TOK_SMALLER
-		| TOK_GREATER
-		| TOK_IS_EQUAL
-		| TOK_NOT_EQUAL
-	) expression
-	| identifier ('TOK_TAB_L' (identifier | NUM) 'TOK_TAB_R')?
-	| '(' expression ')'
-	| NUM
-	| functionCall;
-
-functionCall: identifier '(' parameterList? ')';
-identifier: ID;
+expression: TOK_VAR
+           | TOK_NUM
+           | expression TOK_PLUS expression
+           | expression TOK_MINUS expression
+           | expression TOK_MUL expression
+           | expression TOK_DIV expression
+           | TOK_TAB_L expression_list? TOK_TAB_R
+           | TOK_VAR TOK_GREATER expression
+           | TOK_VAR TOK_SMALLER expression
+           | TOK_VAR TOK_IS_EQUAL expression
+           | TOK_VAR TOK_NOT_EQUAL expression
+           | TOK_LEN TOK_ARG_L TOK_VAR TOK_ARG_R
+           | TOK_FLOOR TOK_ARG_L expression TOK_ARG_R
+           | TOK_ARG_L expression TOK_ARG_R
+           | TOK_VAR TOK_AND TOK_VAR
+           | TOK_VAR TOK_OR TOK_VAR;
 ```
 
 ## Pakiety zewnętrzne
