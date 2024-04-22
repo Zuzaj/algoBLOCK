@@ -1,48 +1,82 @@
-# algocode
+# algoBLOCK
 
-## Introduction
-AlgoBLOCK is a simple programming language designed specifically for educational purposes, focusing on teaching the fundamentals of algorithms and programming concepts. The language provides a minimalist syntax and structure that allows beginners to quickly grasp essential programming techniques without the overhead of more complex programming languages.
+## Założenia programu
+Nasz projekt to prosty język do nauki algorytmów, który ma na celu stworzenie łatwo zrozumiałego środowiska programistycznego. Dzięki prostej składni oraz intuicyjnym słowom kluczowym, użytkownicy będą mogli zrozumieć działanie algorytmów poprzez praktyczne wykorzystanie ich w kodzie.
+1. Planowany wynik działania programu to interpreter języka pseudokodu, umożliwiający użytkownikom pisanie, testowanie i analizowanie działania algorytmów w czasie rzeczywistym.
+2. Planowanym językiem implementacji jest Python.
+3. Planowana realizacja skanera oraz parsera poprzez użycie generatora parserów ANTLR 4.
 
-## Description of Tokens
+## Tokeny
+- ID: '[a-zA-Z_][a-zA-Z0-9_]*';
+- NUM: '[0-9]+ (' .' [0-9]+)?';
+- TOK_ASSIGN: '=';
+- TOK_IS_EQUAL: '==';
+- TOK_NOT_EQUAL: '!=';
+- TOK_SMALLER: '<';
+- TOK_GREATER: '>';
+- TOK_PLUS: '+';
+- TOK_MINUS: '-';
+- TOK_MUL: '*';
+- TOK_DIV: '/';
+- TOK_TAB_L: '[';
+- TOK_TAB_R: ']';
+- WS: [ \t\r\n]+ -> skip;
 
-### Keywords
-- `TKN_IF`: `if`
-- `TKN_THEN`: `then`
-- `TKN_WHILE`: `while`
-- `TKN_FOR`: `for`
-- `TKN_TO`: `to`
-- `TKN_DO`: `do`
-- `TKN_RETURN`: `return`
-- `TKN_LENGTH`: `length`
-- `TKN_FLOOR`: `floor`
-- `TKN_MIN`: `min`
-- `TKN_MAX`: `max`
-- `TKN_MID`: `mid`
-- `TKN_FUNCTION`: `function`
-- `TKN_AND`: `and`
-- `TKN_OR`: `or`
+## Gramatyka
+```g4
+program: function+;
 
-### Variables
-- `TKN_VAR`: `[a-zA-Z_]+` 
+function: 'function' identifier '(' parameterList? ')' block;
 
-### Operators
-- `TKN_EQUAL`: `=`
-- `TKN_PLUS`: `+`
-- `TKN_MINUS`: `-`
-- `TKN_MULT`: `*`
-- `TKN_DIV`: `/`
-- `TKN_LESS`: `<`
-- `TKN_GREATER`: `>`
-- `TKN_LPAREN`: `(`
-- `TKN_RPAREN`: `)`
-- `TKN_LBRACKET`: `[`
-- `TKN_RBRACKET`: `]`
-- `TKN_QUESTION_EQUAL`: `?=`
-- `TKN_NOT_EQUAL`: `/=`
-- `TKN_COMMA`: `,`
+parameterList: identifier (',' identifier)*;
 
-### Literals
-- `TKN_INT_LITERAL`: `[0-9]+` 
-  (Represents any integer number.)
-- `TKN_FLOAT_LITERAL`: `[0-9]+\.[0-9]+`
-  (Represents any floating-point number.)
+block: statement+;
+
+statement:
+	assignment
+	| ifStatement
+	| forStatement
+	| whileStatement
+	| returnStatement;
+
+assignment:
+	identifier ('TOK_TAB_L' (identifier | NUM) 'TOK_TAB_R')? 'TOK_ASSIGN' expression ';';
+
+ifStatement: 'if' expression 'then' block ('else' block)?;
+
+forStatement:
+	'for' identifier 'TOK_ASSIGN' expression 'to' expression 'do' block;
+
+whileStatement: 'while' expression 'do' block;
+
+returnStatement: 'return' expression ';';
+
+expression:
+	expression (
+		TOK_PLUS
+		| TOK_MINUS
+		| TOK_MUL
+		| TOK_DIV
+		| TOK_SMALLER
+		| TOK_GREATER
+		| TOK_IS_EQUAL
+		| TOK_NOT_EQUAL
+	) expression
+	| identifier ('TOK_TAB_L' (identifier | NUM) 'TOK_TAB_R')?
+	| '(' expression ')'
+	| NUM
+	| functionCall;
+
+functionCall: identifier '(' parameterList? ')';
+identifier: ID;
+```
+
+## Pakiety zewnętrzne
+Wykorzystanie ANTLR4 (ANother Tool for Language Recognition) do generowania skanerów i parserów umożliwia szybkie i efektywne tworzenie analizatorów składniowych dla różnorodnych języków programowania oraz specyfikacji formalnych.
+
+## Przykłady użycia 
+Proponowane przykłady algorytmów do przetestowania działania języka znajdują się w folderze [algorythms](./algorithms/).
+
+
+
+
