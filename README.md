@@ -6,6 +6,12 @@ Nasz projekt to prosty język do nauki algorytmów, który ma na celu stworzenie
 2. Planowanym językiem implementacji jest Python.
 3. Planowana realizacja skanera oraz parsera poprzez użycie generatora parserów ANTLR 4.
 
+## Uruchomienie 
+1. Pobierz repozytorium na swój komputer.
+2. Zainstaluj paiekt używając polecenia: `pip install antlr4-python3-runtime==4.13.1`
+3. Uruchom plik `main.py`, możesz wcześniej edytować domyślny plik testowy.
+4. Zidentyfikowane tokeny zostaną zapisane do pliku `tokens.txt`, a wynik analizy składniowej (hierarchia) do pliku `formatted_tree.txt`.
+
 ## Tokeny
 - TOK_VAR: '[a-zA-Z_]+';
 - TOK_NUM: '[0-9]+ (' .' [0-9]+)?';
