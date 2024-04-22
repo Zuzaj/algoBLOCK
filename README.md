@@ -7,11 +7,11 @@ Nasz projekt to prosty język do nauki algorytmów, który ma na celu stworzenie
 3. Planowana realizacja skanera oraz parsera poprzez użycie generatora parserów ANTLR 4.
 
 ## Tokeny
-- ID: '[a-zA-Z_][a-zA-Z0-9_]*';
-- NUM: '[0-9]+ (' .' [0-9]+)?';
+- TOK_VAR: '[a-zA-Z_]+';
+- TOK_NUM: '[0-9]+ (' .' [0-9]+)?';
 - TOK_ASSIGN: '=';
-- TOK_IS_EQUAL: '==';
-- TOK_NOT_EQUAL: '!=';
+- TOK_IS_EQUAL: '?=';
+- TOK_NOT_EQUAL: '/=';
 - TOK_SMALLER: '<';
 - TOK_GREATER: '>';
 - TOK_PLUS: '+';
@@ -20,7 +20,22 @@ Nasz projekt to prosty język do nauki algorytmów, który ma na celu stworzenie
 - TOK_DIV: '/';
 - TOK_TAB_L: '[';
 - TOK_TAB_R: ']';
-- WS: [ \t\r\n]+ -> skip;
+- TOK_ARG_L: '(';
+- TOK_ARG_R: ')';
+- TOK_WS: '[ \t\r\n]+' -> skip;
+- TON_NL: '\n';
+- TOK_FOR  : 'for';
+- TOK_WHILE : 'while';
+- TOK_IF : 'if';
+- TOK_DO : 'do';
+- TOK_tO : 'to';
+- TOK_THEN : 'then';
+- TOK_LEN : 'length';
+- TOK_RETURN : 'return';	
+- TOK_FLOOR: 'floor';
+- TOK_FUNC : 'function';
+- TOK_AND : 'and';
+- TOK_OR : 'or';
 
 ## Gramatyka
 ```g4
