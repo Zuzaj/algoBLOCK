@@ -28,7 +28,7 @@ Nasz projekt to prosty język do nauki algorytmów, który ma na celu stworzenie
 - TOK_WHILE : 'while';
 - TOK_IF : 'if';
 - TOK_DO : 'do';
-- TOK_tO : 'to';
+- TOK_TO : 'to';
 - TOK_THEN : 'then';
 - TOK_LEN : 'length';
 - TOK_RETURN : 'return';	
