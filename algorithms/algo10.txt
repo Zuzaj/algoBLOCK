@@ -1,0 +1,15 @@
+function PARTITION(A, left, right)
+     low = left
+     high = right
+     pivot = A[floor((left + right)/2)]
+     while low <= high do
+        * while A[low] < pivot do
+            * low = low + 1
+        * while A[high] > pivot do
+            * high = high - 1
+       * if low <= high then
+           * SWAP(A[low], A[high])
+           * low = low + 1
+           * high = high - 1
+    return low
+endfunction

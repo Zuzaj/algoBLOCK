@@ -1,4 +1,5 @@
 function FIBONACCI(n)
     if n < 1 then
-        return 1
+        * return 1
     return FIBONACCI(n - 1) + FIBONACCI(n - 2)
+endfunction

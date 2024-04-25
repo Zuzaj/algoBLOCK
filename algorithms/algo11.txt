@@ -1,0 +1,7 @@
+ function QUICK_SORT(A, left, right)   
+    if left < right then
+        * mid = PARTITION(A, left, right)
+        * QUICK_SORT(A, left, mid)
+        * QUICK_SORT(A, mid + 1, right)
+    endif
+endfunction
