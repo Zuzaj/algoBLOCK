@@ -1,29 +1,34 @@
  function MERGE(A, left, mid, right)
-     C = []
+    * C = []
  
-     for i = left to right do                        
+    * for i = left to right do ->                      
         * C[i] = A[i]                                    
+      >-
+    * current = left                                        
+    * leftIndex = left                                     
+    * rightIndex = mid + 1                                 
  
-     current = left                                        
-     leftIndex = left                                     
-     rightIndex = mid + 1                                 
- 
-    while leftIndex <= mid and rightIndex <= right do
-       * if C[leftIndex] <= C[rightIndex] then
+    * while leftIndex <= mid and rightIndex <= right do ->
+       * if C[leftIndex] <= C[rightIndex] then ->
            * A[current] = C[leftIndex]
            * leftIndex = leftIndex + 1
-       * else
+           >-
+       * else ->
            * A[current] = C[rightIndex]
            * rightIndex = rightIndex + 1
-       * current = current + 1                            
+           >-
+       * current = current + 1 
+      >-                            
  
-    while leftIndex <= mid do                            
+   * while leftIndex <= mid do ->                           
        * A[current] = C[leftIndex]                        
        * leftIndex = leftIndex + 1
        * current = current + 1
+     >-
  
-    while rightIndex <= right do                           
+   * while rightIndex <= right do ->                          
        * A[current] = C[rightIndex]                      
        * rightIndex = rightIndex + 1
        * current = current + 1
+     >-  
 endfunction
