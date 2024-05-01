@@ -17,12 +17,39 @@ class algoCodeListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by algoCodeParser#function.
-    def enterFunction(self, ctx:algoCodeParser.FunctionContext):
+    # Enter a parse tree produced by algoCodeParser#code.
+    def enterCode(self, ctx:algoCodeParser.CodeContext):
         pass
 
-    # Exit a parse tree produced by algoCodeParser#function.
-    def exitFunction(self, ctx:algoCodeParser.FunctionContext):
+    # Exit a parse tree produced by algoCodeParser#code.
+    def exitCode(self, ctx:algoCodeParser.CodeContext):
+        pass
+
+
+    # Enter a parse tree produced by algoCodeParser#function_def.
+    def enterFunction_def(self, ctx:algoCodeParser.Function_defContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#function_def.
+    def exitFunction_def(self, ctx:algoCodeParser.Function_defContext):
+        pass
+
+
+    # Enter a parse tree produced by algoCodeParser#function_call.
+    def enterFunction_call(self, ctx:algoCodeParser.Function_callContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#function_call.
+    def exitFunction_call(self, ctx:algoCodeParser.Function_callContext):
+        pass
+
+
+    # Enter a parse tree produced by algoCodeParser#argument.
+    def enterArgument(self, ctx:algoCodeParser.ArgumentContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#argument.
+    def exitArgument(self, ctx:algoCodeParser.ArgumentContext):
         pass
 
 
@@ -53,6 +80,15 @@ class algoCodeListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by algoCodeParser#bool_expression.
+    def enterBool_expression(self, ctx:algoCodeParser.Bool_expressionContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#bool_expression.
+    def exitBool_expression(self, ctx:algoCodeParser.Bool_expressionContext):
+        pass
+
+
     # Enter a parse tree produced by algoCodeParser#for_loop.
     def enterFor_loop(self, ctx:algoCodeParser.For_loopContext):
         pass
@@ -71,30 +107,48 @@ class algoCodeListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by algoCodeParser#else_statement.
+    def enterElse_statement(self, ctx:algoCodeParser.Else_statementContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#else_statement.
+    def exitElse_statement(self, ctx:algoCodeParser.Else_statementContext):
+        pass
+
+
+    # Enter a parse tree produced by algoCodeParser#while_statement.
+    def enterWhile_statement(self, ctx:algoCodeParser.While_statementContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#while_statement.
+    def exitWhile_statement(self, ctx:algoCodeParser.While_statementContext):
+        pass
+
+
+    # Enter a parse tree produced by algoCodeParser#array_def.
+    def enterArray_def(self, ctx:algoCodeParser.Array_defContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#array_def.
+    def exitArray_def(self, ctx:algoCodeParser.Array_defContext):
+        pass
+
+
+    # Enter a parse tree produced by algoCodeParser#array_call.
+    def enterArray_call(self, ctx:algoCodeParser.Array_callContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#array_call.
+    def exitArray_call(self, ctx:algoCodeParser.Array_callContext):
+        pass
+
+
     # Enter a parse tree produced by algoCodeParser#return_statement.
     def enterReturn_statement(self, ctx:algoCodeParser.Return_statementContext):
         pass
 
     # Exit a parse tree produced by algoCodeParser#return_statement.
     def exitReturn_statement(self, ctx:algoCodeParser.Return_statementContext):
-        pass
-
-
-    # Enter a parse tree produced by algoCodeParser#function_call.
-    def enterFunction_call(self, ctx:algoCodeParser.Function_callContext):
-        pass
-
-    # Exit a parse tree produced by algoCodeParser#function_call.
-    def exitFunction_call(self, ctx:algoCodeParser.Function_callContext):
-        pass
-
-
-    # Enter a parse tree produced by algoCodeParser#expression_list.
-    def enterExpression_list(self, ctx:algoCodeParser.Expression_listContext):
-        pass
-
-    # Exit a parse tree produced by algoCodeParser#expression_list.
-    def exitExpression_list(self, ctx:algoCodeParser.Expression_listContext):
         pass
 
 
