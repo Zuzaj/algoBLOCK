@@ -98,12 +98,12 @@ class algoCodeListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by algoCodeParser#if_statement.
-    def enterIf_statement(self, ctx:algoCodeParser.If_statementContext):
+    # Enter a parse tree produced by algoCodeParser#if_else_statement.
+    def enterIf_else_statement(self, ctx:algoCodeParser.If_else_statementContext):
         pass
 
-    # Exit a parse tree produced by algoCodeParser#if_statement.
-    def exitIf_statement(self, ctx:algoCodeParser.If_statementContext):
+    # Exit a parse tree produced by algoCodeParser#if_else_statement.
+    def exitIf_else_statement(self, ctx:algoCodeParser.If_else_statementContext):
         pass
 
 
@@ -113,6 +113,33 @@ class algoCodeListener(ParseTreeListener):
 
     # Exit a parse tree produced by algoCodeParser#else_statement.
     def exitElse_statement(self, ctx:algoCodeParser.Else_statementContext):
+        pass
+
+
+    # Enter a parse tree produced by algoCodeParser#else_return_statement.
+    def enterElse_return_statement(self, ctx:algoCodeParser.Else_return_statementContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#else_return_statement.
+    def exitElse_return_statement(self, ctx:algoCodeParser.Else_return_statementContext):
+        pass
+
+
+    # Enter a parse tree produced by algoCodeParser#if_return_statement.
+    def enterIf_return_statement(self, ctx:algoCodeParser.If_return_statementContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#if_return_statement.
+    def exitIf_return_statement(self, ctx:algoCodeParser.If_return_statementContext):
+        pass
+
+
+    # Enter a parse tree produced by algoCodeParser#if_statement.
+    def enterIf_statement(self, ctx:algoCodeParser.If_statementContext):
+        pass
+
+    # Exit a parse tree produced by algoCodeParser#if_statement.
+    def exitIf_statement(self, ctx:algoCodeParser.If_statementContext):
         pass
 
 

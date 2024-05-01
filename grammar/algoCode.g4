@@ -46,15 +46,15 @@ code: (function_def | statement)+;
 
 function_def: TOK_FUNC TOK_VAR TOK_ARG_L arguments? TOK_ARG_R (statement)* return_statement? TOK_END_FUNC;
 
-function_call: TOK_VAR TOK_ARG_L arguments? TOK_ARG_R;
+function_call:   TOK_VAR TOK_ARG_L arguments? TOK_ARG_R;
 
 argument: expression;
 
 arguments: argument (TOK_COM argument)*;
 
-statement: TOK_EL ( assignment | for_loop | if_statement | function_call | while_statement | array_def );
+statement:  (TOK_EL (assignment | array_def | function_call)) | ( for_loop | if_statement | if_else_statement | if_return_statement | while_statement );
 
-assignment: (TOK_VAR | array_call) TOK_ASSIGN expression;
+assignment:  (TOK_VAR | array_call) TOK_ASSIGN expression;
 
 bool_expression: ( TOK_VAR | TOK_NUM | array_call )
                 (TOK_IS_EQUAL | TOK_NOT_EQUAL | TOK_SMALLER | TOK_GREATER | TOK_GREATER_EQ | TOK_SMALLER_EQ)
@@ -66,13 +66,19 @@ bool_expression: ( TOK_VAR | TOK_NUM | array_call )
 
 for_loop: TOK_FOR TOK_VAR TOK_ASSIGN expression (TOK_TO | TOK_DOWNTO) expression TOK_DO TOK_ARROW_L (statement)+ TOK_ARROW_R;
 
-if_statement: TOK_IF bool_expression TOK_THEN TOK_ARROW_L (statement)+ (else_statement)? TOK_ARROW_R;
+if_else_statement: if_statement (else_statement | else_return_statement);
 
 else_statement: TOK_ELSE TOK_ARROW_L (statement)+ TOK_ARROW_R;
 
+else_return_statement: TOK_ELSE TOK_ARROW_L (statement)* return_statement TOK_ARROW_R;
+
+if_return_statement: TOK_IF bool_expression TOK_THEN TOK_ARROW_L (statement)* return_statement TOK_ARROW_R;
+
+if_statement:  TOK_IF bool_expression TOK_THEN TOK_ARROW_L (statement)+  TOK_ARROW_R;
+
 while_statement: TOK_WHILE bool_expression TOK_DO TOK_ARROW_L (statement)+ TOK_ARROW_R;
 
-array_def: TOK_VAR TOK_ASSIGN TOK_TAB_L TOK_TAB_R;
+array_def:   TOK_VAR TOK_ASSIGN TOK_TAB_L TOK_TAB_R;
 
 array_call: TOK_VAR TOK_TAB_L 
             ( expression | function_call)
