@@ -1,5 +1,5 @@
 function MERGE_SORT(A, left, right)
-    * if left < right then ->
+     if left < right then ->
        * mid = FLOOR(left/2 + right/2)
        * MERGE_SORT(A, left, mid)
        * MERGE_SORT(A, mid + 1, right)

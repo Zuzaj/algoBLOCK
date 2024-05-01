@@ -1,6 +1,6 @@
 function FIBONACCI(n)
-   * if n < 1 then ->
-        * return 1
+    if n < 1 then ->
+         return 1
     >-    
    * output = FIBONACCI(n - 1) + FIBONACCI(n - 2)     
     return output

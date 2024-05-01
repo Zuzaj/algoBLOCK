@@ -1,7 +1,7 @@
 function MIN_INDEX(A, start, end)
      * min = 0
-     * for i = start to end do ->
-        * if A[min] > A[i] then ->
+      for i = start to end do ->
+         if A[min] > A[i] then ->
             * min = i
           >-
      >-

@@ -8,72 +8,110 @@ program
           expression
         argument
           expression
-      statement
-        assignment
+        argument
           expression
       statement
-        assignment
-          expression
+        array_def
       statement
-        assignment
+        for_loop
           expression
-            array_call
+          expression
+          statement
+            assignment
+              array_call
+                expression
               expression
-                function_call
-                  arguments
-                    argument
-                      expression
-                        expression
-                          expression
-                          expression
-                            expression
-                            expression
-                        expression
+                array_call
+                  expression
+      statement
+        assignment
+          expression
+      statement
+        assignment
+          expression
+      statement
+        assignment
+          expression
+            expression
+            expression
       statement
         while_statement
           bool_expression
           statement
-            while_statement
-              bool_expression
+            if_else_statement
+              if_statement
+                bool_expression
+                  array_call
+                    expression
+                  array_call
+                    expression
+                statement
+                  assignment
+                    array_call
+                      expression
+                    expression
+                      array_call
+                        expression
+                statement
+                  assignment
+                    expression
+                      expression
+                      expression
+              else_statement
+                statement
+                  assignment
+                    array_call
+                      expression
+                    expression
+                      array_call
+                        expression
+                statement
+                  assignment
+                    expression
+                      expression
+                      expression
+          statement
+            assignment
+              expression
+                expression
+                expression
+      statement
+        while_statement
+          bool_expression
+          statement
+            assignment
+              array_call
+                expression
+              expression
                 array_call
                   expression
-              statement
-                assignment
-                  expression
-                    expression
-                    expression
           statement
-            while_statement
-              bool_expression
+            assignment
+              expression
+                expression
+                expression
+          statement
+            assignment
+              expression
+                expression
+                expression
+      statement
+        while_statement
+          bool_expression
+          statement
+            assignment
+              array_call
+                expression
+              expression
                 array_call
                   expression
-              statement
-                assignment
-                  expression
-                    expression
-                    expression
           statement
-            if_statement
-              bool_expression
-              statement
-                function_call
-                  arguments
-                    argument
-                      expression
-                        array_call
-                          expression
-                    argument
-                      expression
-                        array_call
-                          expression
-              statement
-                assignment
-                  expression
-                    expression
-                    expression
-              statement
-                assignment
-                  expression
-                    expression
-                    expression
-      return_statement
+            assignment
+              expression
+                expression
+                expression
+          statement
+            assignment
+              expression
+                expression
+                expression

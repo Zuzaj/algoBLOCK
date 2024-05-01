@@ -4,14 +4,14 @@
     * right = RIGHT(i)
     * size = HEAP_SIZE(A)
 
-    * if left < size and A[left] > A[largest] then ->
+     if left < size and A[left] > A[largest] then ->
         * largest = left                             
       >-
-    * if right <= size and A[right] > A[largest] then ->
+     if right <= size and A[right] > A[largest] then ->
         * largest = right
       >-
 
-   * if largest /= i then ->                          
+    if largest /= i then ->                          
        * SWAP(A[i], A[largest])                  
        * HEAPIFY(A, largest) 
       >-                  

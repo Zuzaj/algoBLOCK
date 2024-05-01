@@ -41,7 +41,7 @@ class TreePrinterListener(ParseTreeListener):
 
 def main():
     #tu możesz wybrać inny plik do testowania z folderu algorithms lub przesłać swój plik do folderu, a następnie wpisać jesgo nazwę
-    input_stream = FileStream('algorithms/algo10.txt', encoding='utf-8')
+    input_stream = FileStream('algorithms/algo13.txt', encoding='utf-8')
     lexer = algoCodeLexer(input_stream)
     print_tokens(lexer)
     stream = CommonTokenStream(lexer)

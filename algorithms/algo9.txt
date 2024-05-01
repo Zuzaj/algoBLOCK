@@ -1,16 +1,16 @@
 function COUNTING_SORT(A, B, k)
    * C = []
  
-   * for i = 0 to k do ->
+    for i = 0 to k do ->
         * C[i] = 0
     >-
-   * for j = 1 to length(A) do ->
+    for j = 1 to length(A) do ->
         * C[A[j]] = C[A[j]] + 1
     >-
-   * for i = 1 to k do ->
+    for i = 1 to k do ->
        * C[i] = C[i] + C[i - 1]
     >-
-   * for j = length(A) downto 1 do ->
+    for j = length(A) downto 1 do ->
        * B[C[A[j]]] = A[j]
        * C[A[j]] = C[A[j]] - 1
     >-
