@@ -15,5 +15,5 @@ function PARTITION(A, left, right)
             * high = high - 1
         >-
     >-
-   * return low
+    return low
 endfunction
