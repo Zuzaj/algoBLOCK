@@ -3,5 +3,5 @@ function FIBONACCI(n)
         * return 1
     >-    
    * output = FIBONACCI(n - 1) + FIBONACCI(n - 2)     
-   * return output
+    return output
 endfunction
