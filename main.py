@@ -21,7 +21,7 @@ def main():
     print(tree.toStringTree(recog=parser))
 
     visitor = algoCodeVisitor()
-    print(visitor.visit(tree))
+    visitor.visitProgram(tree)
 
     
 
