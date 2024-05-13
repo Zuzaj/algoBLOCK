@@ -1,0 +1,9 @@
+* a = 1
+* b = 3
+function  MIN_INDEX(a, b)
+     * c = a + b
+    return c
+endfunction
+
+* g = MIN_INDEX(a,b)
+* print(g)

@@ -15,6 +15,7 @@ class algoCodeVisitor(ParseTreeVisitor):
     # def listę słowników booo każdy słownik = blok kodu
     def __init__(self):
         self.context = [{}] 
+        self.functions = []
 
     # def enter_scope(self):
     #     self.context.append({}) 
@@ -25,16 +26,26 @@ class algoCodeVisitor(ParseTreeVisitor):
     
     #wchodze do bloku, odwiedzam dzieci, wychodze z bloku
     def visitFunction_def(self, ctx:algoCodeParser.Function_defContext):
-        func_name = ctx.TOK_VAR().getText()
-        self.context[-1][func_name] = {}
-        arguments = self.visit(ctx.arguments())
-        statements = [self.visit(statement) for statement in ctx.statement()]
-        return_statement = self.visit(ctx.return_statement()) if ctx.return_statement() else None
-        print(f"Function: {func_name}, Arguments: {arguments}")
-        for statement in statements:
-            self.visitStatement(statement)
-        if return_statement:
-            self.visitReturn_statement(return_statement)
+
+        function_name = ctx.TOK_VAR().getText()
+        arguments = []
+        statements = []
+        return_statement = []
+
+        arguments_ctx = ctx.arguments()
+        if arguments_ctx:
+            arguments = self.visitArguments(arguments_ctx)
+
+        statement_ctxs = ctx.statement()
+        for statement_ctx in statement_ctxs:
+            statements.append(statement_ctx)
+
+        return_statement = ctx.return_statement()
+        self.functions.append(function_name)
+        self.context[-1][function_name] = {}
+        self.context[-1][function_name]["params"] = (arguments, statements, return_statement)
+
+        print("visited function def")
 
     
     #początkowo samo przypisanie zmiennej bez tablicy dla testow
@@ -43,7 +54,7 @@ class algoCodeVisitor(ParseTreeVisitor):
         value = self.visitExpression(ctx.expression())
         if ctx.array_call():
             array_name = left_value
-            index = self.visit(ctx.array_call().expression())
+            index = self.visitExpression(ctx.array_call().expression())
             #sprawdzam czy tablica zainicjowana
             if array_name not in self.context[-1]:
                 #jeśli nie to inicjuję jako słownik
@@ -51,7 +62,7 @@ class algoCodeVisitor(ParseTreeVisitor):
             self.context[-1][array_name][index] = value
         else:
             self.context[-1][left_value] = value
-        print("Assignment successful")
+        print("visited assignment")
         return value
     
     def visitExpression(self, ctx: algoCodeParser.ExpressionContext):
@@ -94,26 +105,21 @@ class algoCodeVisitor(ParseTreeVisitor):
                 right_operand =  self.context[-1].get(right_operand_name, None)
             else:
                 right_operand = int(ctx.getChild(2).getText())
-            
-            # tutaj się wali bo jak mam a = a + 5 to bierze a za ciag znaków i nie odwoła się do tego co przechowuje zmienna
-            # left_operand = self.visitExpression(ctx.expression(0))
-            # right_operand = self.visitExpression(ctx.expression(1))
-            # print(left_operand) 
             operator = ctx.getChild(1).getText()
             
-            if operator == '+':
-                return (left_operand + right_operand)
-            elif operator == '-':
-                return left_operand - right_operand
-            elif operator == '/':
-                if right_operand != 0:
-                    return left_operand / right_operand
-                else:
+            if left_operand and right_operand:
+                if operator == '+':
+                    return (left_operand + right_operand)
+                elif operator == '-':
+                    return left_operand - right_operand
+                elif operator == '/':
+                    if right_operand != 0:
+                        return left_operand / right_operand
+            else:
                     # cholero nie dziel przez zero
-                    return None
-        else:
-            print('blaba')
-            return self.visitChildren(ctx)
+                return None
+        # else:
+        #     return self.visitChildren(ctx)
                 
         
     def visitFunction_call(self, ctx:algoCodeParser.Function_callContext):
@@ -122,11 +128,32 @@ class algoCodeVisitor(ParseTreeVisitor):
             # obsługa specjalnych funkcji, na razie tylko print
         if func_name.lower() == 'print':
             print(arguments)
+
             # tutaj można dodać obsługę innych funkcji
+        elif func_name in self.context[-1]:
+            function_definition = self.context[-1][func_name]["params"]
+            if len(arguments) != len(function_definition[0]):
+                print(f"Error: Function '{func_name}' expects {len(function_definition[0])} arguments, but {len(arguments)} were provided.")
+                return None
+            output = self.execute_statements(function_definition[0], arguments, function_definition[1], function_definition[2], func_name)
+            print("visited function call ")
+            if output:
+                return output
+        else:
+            raise ValueError(f"Function '{func_name}' is not defined.")
+        
+    def execute_statements(self, func_args, call_args, func_statements, func_return, f_name):
+        # dla kazdej funkcji słownik ze zmiennymi
+        for arg_name, arg_value in zip(func_args, call_args):
+            self.context[-1][f_name][arg_name] = arg_value
+        output = None
+        for statement_ctx in func_statements:
+            self.visitStatement(statement_ctx)
+        if func_return:
+            output = self.visitReturn_statement(func_return)
+        return output
+        
        
-
-
-
     # Visit a parse tree produced by algoCodeParser#program.
     def visitProgram(self, ctx):
         self.visitCode(ctx.code())
@@ -134,17 +161,21 @@ class algoCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by algoCodeParser#code.
     def visitCode(self, ctx:algoCodeParser.CodeContext):
-        code_result = []
-        for child in ctx.getChildren():
-            code_result.append(self.visitStatement(child))
-        print('success')
+        if ctx.function_def():
+            for child in ctx.function_def():
+                self.visitFunction_def(child)        
+        if ctx.statement():
+            for child in ctx.statement():
+                self.visitStatement(child)
+        print('visited code')
                 
 
     # Visit a parse tree produced by algoCodeParser#argument.
     def visitArgument(self, ctx:algoCodeParser.ArgumentContext):
         #zwracam dziecko czyli argument
         var_name = ctx.getText()
-        print(f"wartosc: {self.context[-1].get(var_name, None)}")
+        # print(f"wartosc: {self.context[-1].get(var_name, None)}")
+        print("visited argument")
         return self.context[-1].get(var_name, None)
 
 
@@ -155,6 +186,7 @@ class algoCodeVisitor(ParseTreeVisitor):
         if ctx.argument():
             for child in ctx.argument():
                 arguments.append(self.visitArgument(child))
+        print("visited arguments")
         return arguments
 
     # Visit a parse tree produced by algoCodeParser#statement.
@@ -175,9 +207,7 @@ class algoCodeVisitor(ParseTreeVisitor):
             return self.visitIf_return_statement(ctx.if_return_statement())
         elif ctx.while_statement():
             return self.visitWhile_statement(ctx.while_statement())
-        else:
-            raise ValueError("Unsupported statement context: {}".format(ctx.getText()))
-        
+        print("visited statement")
         
 
 
@@ -294,18 +324,22 @@ class algoCodeVisitor(ParseTreeVisitor):
     def visitArray_call(self, ctx:algoCodeParser.Array_callContext):
         arr_name = ctx.TOK_VAR().getText()
         #sprawdzam index w nawiasach
-        index = self.visit(ctx.expression())
+        index = self.visitExpression(ctx.expression())
         # jeśli istnieje tablica i taki index to pobieram wartość
         if arr_name in self.context[-1] and index in self.context[-1][arr_name]:
+            print("visited array call")
             return self.context[-1][arr_name][index]
         else:
             #jak nie to nic? tutaj chyba error by się przydał
             return None
+        
+        
 
 
     # Visit a parse tree produced by algoCodeParser#return_statement.
     def visitReturn_statement(self, ctx:algoCodeParser.Return_statementContext):
-        value = self.visit(ctx.getChild(1))
+        value = self.context[-1].get(ctx.getChild(1).getText())
+        print("visited return")
         return value
     
     def visitChildren(self, ctx):
