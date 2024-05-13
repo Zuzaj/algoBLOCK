@@ -56,37 +56,53 @@ class algoCodeVisitor(ParseTreeVisitor):
     
     def visitExpression(self, ctx: algoCodeParser.ExpressionContext):
             # If the expression is a variable
-        if ctx.TOK_VAR():
-            var_name = ctx.TOK_VAR().getText()
-            return var_name
-        
-        # If the expression is a number
-        elif ctx.TOK_NUM():
-            return int(ctx.TOK_NUM().getText())
-        
-        # If the expression is an array call
-        elif ctx.array_call():
-            return self.visitArray_call(ctx.array_call())
-        
-        # If the expression is a function call
-        elif ctx.function_call():
-            return self.visitFunction_call(ctx.function_call())
-        
-        # ten len token to chyba nie powinien istnieć wgl
-        elif ctx.TOK_LEN():
-            array_name = ctx.expression().getText()
-            if array_name in self.context[-1]:
-                return len(self.context[-1][array_name])
-            else:
-                return None
+        if  ctx.getChildCount() == 1:  
+            if ctx.TOK_VAR():
+                var_name = ctx.TOK_VAR().getText()
+                return var_name
+            
+            # If the expression is a number
+            elif ctx.TOK_NUM():
+                return int(ctx.TOK_NUM().getText())
+            
+            # If the expression is an array call
+            elif ctx.array_call():
+                return self.visitArray_call(ctx.array_call())
+            
+            # If the expression is a function call
+            elif ctx.function_call():
+                return self.visitFunction_call(ctx.function_call())
+            
+            # ten len token to chyba nie powinien istnieć wgl
+            elif ctx.TOK_LEN():
+                array_name = ctx.expression().getText()
+                if array_name in self.context[-1]:
+                    return len(self.context[-1][array_name])
+                else:
+                    return None
         
         # jeśli działanie
         elif ctx.getChildCount() > 1:
-            left_operand = self.visit(ctx.expression(0))
+            if(ctx.getChild(0).TOK_VAR()):
+                left_operand_name = ctx.getChild(0).getText()
+                left_operand =  self.context[-1].get(left_operand_name, None)
+            else:
+                left_operand = int(ctx.getChild(0).getText())
+
+            if(ctx.getChild(2).TOK_VAR()):
+                right_operand_name = ctx.getChild(2).getText()
+                right_operand =  self.context[-1].get(right_operand_name, None)
+            else:
+                right_operand = int(ctx.getChild(2).getText())
+            
+            # tutaj się wali bo jak mam a = a + 5 to bierze a za ciag znaków i nie odwoła się do tego co przechowuje zmienna
+            # left_operand = self.visitExpression(ctx.expression(0))
+            # right_operand = self.visitExpression(ctx.expression(1))
+            # print(left_operand) 
             operator = ctx.getChild(1).getText()
-            right_operand = self.visit(ctx.expression(1))
+            
             if operator == '+':
-                return left_operand + right_operand
+                return (left_operand + right_operand)
             elif operator == '-':
                 return left_operand - right_operand
             elif operator == '/':
@@ -205,15 +221,12 @@ class algoCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by algoCodeParser#for_loop.
     def visitFor_loop(self, ctx:algoCodeParser.For_loopContext):
-        var = ctx.TOK_VAR().getText()
-        start = self.visit(ctx.expression(0))
-        end = self.visit(ctx.expression(1))
-        statements = [self.visitStatement(child) for child in ctx.statement()]
-
-        # logika dla for 
-        for i in range(start, end + 1):
-            self.context[-1][var] = i
-            for statement in statements:
+        loop_var = ctx.TOK_VAR().getText()
+        start = self.visitExpression(ctx.expression(0))
+        end = self.visitExpression(ctx.expression(1))
+        for current_value in range(start, end + 1):
+            self.context[-1][loop_var] = current_value
+            for statement in ctx.statement():
                 self.visitStatement(statement)
 
 
@@ -273,6 +286,7 @@ class algoCodeVisitor(ParseTreeVisitor):
         #pobieram nazzwe tablicy i dodaje do kontekstu jako zainicjalizowana
         arr_name = ctx.TOK_VAR().getText()
         self.context[-1][arr_name] = {}
+        print(f"Array defined: {arr_name} as empty dictionary")
         return None
 
 
