@@ -5,6 +5,7 @@ if "." in __name__:
     from .algoCodeParser import algoCodeParser
 else:
     from algoCodeParser import algoCodeParser
+from math import ceil
 
 
 
@@ -124,10 +125,32 @@ class algoCodeVisitor(ParseTreeVisitor):
         
     def visitFunction_call(self, ctx:algoCodeParser.Function_callContext):
         func_name = ctx.TOK_VAR().getText()
+        variables = ctx.arguments()
         arguments = self.visitArguments(ctx.arguments())
             # obsługa specjalnych funkcji, na razie tylko print
         if func_name.lower() == 'print':
             print(arguments)
+        elif func_name == 'PARTITION':
+            pass
+        elif func_name == 'FLOOR':
+            pass
+        elif func_name == 'SWAP_VAR':
+            if len(arguments) != 2:
+                print("Error: SWAP function expects exactly two arguments.")
+                return None
+            args = ctx.arguments().getText()
+
+            var1, var2 = args.split(',')
+            # Retrieve the values from the context
+            value1 = self.context[-1].get(var1)
+            value2 = self.context[-1].get(var2)
+            # Create copies of the values to avoid modifying the original references
+            value1_copy = value1
+            value2_copy = value2
+
+            # Swap the values
+            self.context[-1][var1] = value2_copy
+            self.context[-1][var2] = value1_copy
 
             # tutaj można dodać obsługę innych funkcji
         elif func_name in self.context[-1]:
