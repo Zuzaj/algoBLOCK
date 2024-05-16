@@ -1,4 +1,5 @@
 # Generated from algoCode.g4 by ANTLR 4.13.1
+import re
 from antlr4 import ParseTreeVisitor
 from antlr4 import *
 if "." in __name__:
@@ -272,6 +273,23 @@ class algoCodeVisitor(ParseTreeVisitor):
             # Swap the values
             self.context[-1][var1] = value2_copy
             self.context[-1][var2] = value1_copy
+        
+        elif func_name == 'SWAP_ARRAY':
+            if len(arguments) != 2:
+                print("Error: SWAP function expects exactly two arguments.")
+                return None
+            values = self.visitArguments(ctx.arguments())
+            val1, val2 = values[0], values[1]
+            print(val1, val2)
+            arr1 = ctx.arguments().argument()[0].expression().array_call().TOK_VAR().getText()
+            idx1 = self.visitExpression(ctx.arguments().argument()[0].expression().array_call().expression())
+            arr2 = ctx.arguments().argument()[1].expression().array_call().TOK_VAR().getText()
+            idx2 = self.visitExpression(ctx.arguments().argument()[1].expression().array_call().expression())
+
+
+            self.context[-1][arr1][idx1] = val2
+            self.context[-1][arr2][idx2] = val1
+
 
             # tutaj można dodać obsługę innych funkcji
         elif func_name in self.context[-1]:
