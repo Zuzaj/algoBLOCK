@@ -175,14 +175,13 @@ class algoCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by algoCodeParser#if_else_statement.
     def visitIf_else_statement(self, ctx:algoCodeParser.If_else_statementContext):
-        condition = self.visitBool_expression(ctx.if_statement())
-        #lista wszystkich elsów
+        condition = self.visitIf_statement(ctx.if_statement())
         else_statements = []
-        if ctx.else_statement():
-            #przechodzę po wszystkich statementach w kazdym elsie
+        if len(condition)==0 and ctx.else_statement():
+            # Jeśli warunek if nie został spełniony i istnieje blok else
             else_statements = [self.visitStatement(child) for child in ctx.else_statement().statement()]
-
         return condition, else_statements
+
 
 
     # Visit a parse tree produced by algoCodeParser#else_statement.
@@ -196,10 +195,9 @@ class algoCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by algoCodeParser#if_return_statement.
     def visitIf_return_statement(self, ctx:algoCodeParser.If_return_statementContext):
-        condition = self.visitBool_expression(ctx.bool_expression())
+        condition = self.visitIf_statement(ctx.if_statement())
         if condition:
-            for statement_ctx in ctx.statement():
-                self.visitStatement(statement_ctx)
+            self.visitStatements(ctx.statement())
             return_value = self.visitReturn_statement(ctx.return_statement())
             return return_value
 
@@ -208,28 +206,21 @@ class algoCodeVisitor(ParseTreeVisitor):
     # Visit a parse tree produced by algoCodeParser#if_statement.
     def visitIf_statement(self, ctx:algoCodeParser.If_statementContext):
         condition = self.visitBool_expression(ctx.bool_expression())
-
         statement_results = []
-
         if condition:
             for statement_ctx in ctx.statement():
                 result = self.visitStatement(statement_ctx)
                 statement_results.append(result)
+        
         return statement_results
 
 
-    # Visit a parse tree produced by algoCodeParser#while_statement.
     def visitWhile_statement(self, ctx:algoCodeParser.While_statementContext):
-        condition = self.visit(ctx.bool_expression())
-
-        # iteruje po statementach w whilu
-        statements = [self.visitStatement(child) for child in ctx.statement()]
-
-        # wykonuje whila
-        while while_condition:
-            for statement in statements:
+        condition = self.visitBool_expression(ctx.bool_expression())
+        while condition:
+            for statement in ctx.statement():
                 self.visitStatement(statement)
-            while_condition = self.visit(ctx.bool_expression())
+            condition = self.visitBool_expression(ctx.bool_expression())
 
         
         
