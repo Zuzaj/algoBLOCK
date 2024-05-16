@@ -41,13 +41,9 @@ class algoCodeVisitor(ParseTreeVisitor):
     
     def visitAssignment(self, ctx:algoCodeParser.AssignmentContext):
         if ctx.array_call():
-            print("lala")
             array_name = ctx.array_call().TOK_VAR().getText()
             index = self.visitExpression(ctx.array_call().expression())
             value = self.visitExpression(ctx.expression())
-            print(index)
-            print(value)
-            print(self.context[-1])
             #sprawdzam czy tablica zainicjowana
             if array_name not in self.context[-1].keys():
                 self.context[-1][array_name] = {}
@@ -75,7 +71,6 @@ class algoCodeVisitor(ParseTreeVisitor):
             
             # If the expression is an array call
             elif ctx.array_call():
-                print('jestem tu')
                 return self.visitArray_call(ctx.array_call())
             
             # If the expression is a function call
@@ -112,38 +107,58 @@ class algoCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by algoCodeParser#bool_expression.
     def visitBool_expression(self, ctx:algoCodeParser.Bool_expressionContext):
-        left_operand = self.visit(ctx.getChild(0))
-        operator = ctx.getChild(1).getText()
-        right_operand = self.visit(ctx.getChild(2))
-        for i in range(ctx.getChildCount()):
-            child = ctx.getChild(i)
-            if isinstance(child, TerminalNode):
-            # jeśli child jest tokenerm, sprawdzam typ i wartość
-                token_type = child.getSymbol().type
-                token_text = child.getText()
-                if token_type == algoCodeParser.TOK_VAR:
-                # Variable token
-                # Perform any necessary actions, such as fetching its value from the context
-                    pass
-                elif token_type == algoCodeParser.TOK_NUM:
-                # Numeric token
-                # Convert its text to an integer
-                    pass
-                elif token_type in [algoCodeParser.TOK_IS_EQUAL, algoCodeParser.TOK_NOT_EQUAL, algoCodeParser.TOK_SMALLER, algoCodeParser.TOK_GREATER, algoCodeParser.TOK_GREATER_EQ, algoCodeParser.TOK_SMALLER_EQ]:
-                # Comparison operator tokens
-                    operator = token_text
-                elif token_type in [algoCodeParser.TOK_AND, algoCodeParser.TOK_OR]:
-                # Logical operator tokens
-                    operator = token_text
-                else:
-                # Handle other token types if necessary
-                    pass
-            elif child.array_call():
-            # If the child is an array call context, handle it accordingly
-                pass
-            elif isinstance(child, algoCodeParser.Bool_expressionContext):
-            # If the child is another boolean expression context, recursively visit it
-                pass
+        
+        def visitVal(right_value):
+            if isinstance(right_value, TerminalNode):
+                right_value = right_value.getText()
+                right_operand = self.context[-1].get(right_value)
+                if not right_operand:
+                    right_operand = int(right_value)
+            else:
+                right_operand = self.visitArray_call(right_value)
+            return right_operand
+
+        def evaluate(operator, right_operand, left_operand):
+            if operator == '==':
+                return left_operand == right_operand
+            elif operator == '!=':
+                return left_operand != right_operand
+            elif operator == '<':
+                return left_operand < right_operand
+            elif operator == '>':
+                print(left_operand > right_operand)
+                return left_operand > right_operand
+            elif operator == '<=':
+                return left_operand <= right_operand
+            elif operator == '>=':
+                return left_operand >= right_operand
+            
+        i = 2
+        outputs = []
+        while i < ctx.getChildCount():
+            left_value = ctx.getChild(i-2)
+            right_value = ctx.getChild(i)
+            right_operand = visitVal(right_value)
+            left_operand = visitVal(left_value)
+            operator = ctx.getChild(i-1).getText()
+            outputs.append(evaluate(operator, right_operand, left_operand))
+            i+=4
+
+        # # If there are additional operations (e.g., AND or OR), continue evaluating
+        operators = []
+        output = outputs[0]
+        if ctx.getChildCount() > 3:
+            i = 3
+            while i < ctx.getChildCount():
+                 next_operator = ctx.getChild(i).getText()
+                 operators.append(next_operator)     
+                 i += 3
+            for j in range(len(outputs)-1):
+                if operators[j] == 'and':
+                    output = output and outputs[j+1]
+                elif operators[j] == 'or':
+                    output = output or outputs[j+1]
+        return output
 
 
 
@@ -159,7 +174,7 @@ class algoCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by algoCodeParser#if_else_statement.
     def visitIf_else_statement(self, ctx:algoCodeParser.If_else_statementContext):
-        condition = self.visit(ctx.if_statement())
+        condition = self.visitBool_expression(ctx.if_statement())
         #lista wszystkich elsów
         else_statements = []
         if ctx.else_statement():
@@ -180,18 +195,26 @@ class algoCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by algoCodeParser#if_return_statement.
     def visitIf_return_statement(self, ctx:algoCodeParser.If_return_statementContext):
-        condition = self.visit(ctx.if_statement())
-        return_statement = self.visitReturn_statement(ctx.return_statement())
-        return condition, return_statement
+        condition = self.visitBool_expression(ctx.bool_expression())
+        if condition:
+            for statement_ctx in ctx.statement():
+                self.visitStatement(statement_ctx)
+            return_value = self.visitReturn_statement(ctx.return_statement())
+            return return_value
+
 
 
     # Visit a parse tree produced by algoCodeParser#if_statement.
     def visitIf_statement(self, ctx:algoCodeParser.If_statementContext):
-        condition = self.visit(ctx.bool_expression())
+        condition = self.visitBool_expression(ctx.bool_expression())
 
-        # iteruje po statememntach w ifie
-        statements = [self.visitStatement(child) for child in ctx.statement()]
-        return condition, statements
+        statement_results = []
+
+        if condition:
+            for statement_ctx in ctx.statement():
+                result = self.visitStatement(statement_ctx)
+                statement_results.append(result)
+        return statement_results
 
 
     # Visit a parse tree produced by algoCodeParser#while_statement.
@@ -340,7 +363,6 @@ class algoCodeVisitor(ParseTreeVisitor):
     # Visit a parse tree produced by algoCodeParser#array_call.
     def visitArray_call(self, ctx:algoCodeParser.Array_callContext):
         arr_name = ctx.TOK_VAR().getText()
-        print(arr_name)
         #sprawdzam index w nawiasach
         index = self.visitExpression(ctx.expression())
 
@@ -350,7 +372,6 @@ class algoCodeVisitor(ParseTreeVisitor):
             if index in self.context[-1][arr_name]:
                 return self.context[-1][arr_name].get(index)
             else:
-                print("dupa")
                 return None
         else:
             #jak nie to nic? tutaj chyba error by się przydał
