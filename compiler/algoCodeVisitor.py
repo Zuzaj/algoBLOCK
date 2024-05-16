@@ -16,6 +16,16 @@ class algoCodeVisitor(ParseTreeVisitor):
     def __init__(self):
         self.context = [{}] 
         self.functions = []
+        self.initA()
+    def initA(self):
+        self.context[-1]['A'] = {}
+        self.context[-1]['A'][7] = 1
+        self.context[-1]['A'][1] = 3
+        self.context[-1]['A'][2] = 7
+        self.context[-1]['A'][3] = 2
+        self.context[-1]['A'][4] = 4
+        self.context[-1]['A'][5] = 9
+        self.context[-1]['A'][6] = 5
 
     def visitFunction_def(self, ctx:algoCodeParser.Function_defContext):
         function_name = ctx.TOK_VAR().getText()
@@ -62,33 +72,32 @@ class algoCodeVisitor(ParseTreeVisitor):
     
     def visitExpression(self, ctx: algoCodeParser.ExpressionContext):
             # If the expression is a variable
-            if ctx.TOK_VAR():
-                var_name = ctx.TOK_VAR().getText()
-                return self.context[-1].get(var_name, None)
-            
-            # If the expression is a number
-            elif ctx.TOK_NUM():
-                return int(ctx.TOK_NUM().getText())
-            
-            # If the expression is an array call
-            elif ctx.array_call():
-                return self.visitArray_call(ctx.array_call())
-            
-            # If the expression is a function call
+            if isinstance(ctx, TerminalNode):
+                return ctx.getText()
+            if ctx.getChildCount() == 1:
+                if ctx.TOK_VAR():
+                    var_name = ctx.TOK_VAR().getText()
+                    return self.context[-1].get(var_name, None)
 
-            elif ctx.function_call():
-                return self.visitFunction_call(ctx.function_call())
+                    
+                    # If the expression is a number
+                if ctx.TOK_NUM():
+                    return int(ctx.TOK_NUM().getText())
+                if ctx.array_call():
+                    return self.visitArray_call(ctx.array_call())
+                if ctx.function_call():
+                    return self.visitFunction_call(ctx.function_call())
             
             # ten len token to chyba nie powinien istnieć wgl
-            elif ctx.TOK_LEN():
-                array_name = ctx.expression().getText()
+            elif ctx.getChildCount() == 4:
+                array_name = ctx.TOK_VAR().getText()
                 if array_name in self.context[-1]:
                     return len(self.context[-1][array_name])
                 else:
                     return None
         
         # jeśli działanie
-            if ctx.getChildCount() > 1:
+            else:
                 left_operand = self.visitExpression(ctx.expression(0))
                 right_operand = self.visitExpression(ctx.expression(1))
                 operator = ctx.getChild(1).getText()
@@ -127,7 +136,6 @@ class algoCodeVisitor(ParseTreeVisitor):
             elif operator == '<':
                 return left_operand < right_operand
             elif operator == '>':
-                print(left_operand > right_operand)
                 return left_operand > right_operand
             elif operator == '<=':
                 return left_operand <= right_operand
@@ -226,7 +234,6 @@ class algoCodeVisitor(ParseTreeVisitor):
         
     def visitReturn_statement(self, ctx:algoCodeParser.Return_statementContext):
         value = self.context[-1].get(ctx.getChild(1).getText())
-        print("visited return")
         return value
     
     def visitChildren(self, ctx):
@@ -271,7 +278,6 @@ class algoCodeVisitor(ParseTreeVisitor):
                 return None
             values = self.visitArguments(ctx.arguments())
             val1, val2 = values[0], values[1]
-            print(val1, val2)
             arr1 = ctx.arguments().argument()[0].expression().array_call().TOK_VAR().getText()
             idx1 = self.visitExpression(ctx.arguments().argument()[0].expression().array_call().expression())
             arr2 = ctx.arguments().argument()[1].expression().array_call().TOK_VAR().getText()
@@ -281,6 +287,17 @@ class algoCodeVisitor(ParseTreeVisitor):
             self.context[-1][arr1][idx1] = val2
             self.context[-1][arr2][idx2] = val1
 
+        elif func_name == 'MIN_INDEX':
+            if len(arguments) != 1:
+                print("Error: MIN_INDEX function expects exactly 1 argument.")
+                return None
+            else:
+                tab = ctx.arguments().argument()[0].expression().getText()
+                min = 1
+                for item in self.context[-1][tab]:
+                    if self.context[-1][tab][item] < self.context[-1][tab][min]:
+                        min = item
+                return min
 
             # tutaj można dodać obsługę innych funkcji
         elif func_name in self.context[-1]:
@@ -288,8 +305,8 @@ class algoCodeVisitor(ParseTreeVisitor):
             if len(arguments) != len(function_definition[0]):
                 print(f"Error: Function '{func_name}' expects {len(function_definition[0])} arguments, but {len(arguments)} were provided.")
                 return None
+            
             output = self.execute_statements(function_definition[0], arguments, function_definition[1], function_definition[2], func_name)
-            print("visited function call ")
             if output:
                 return output
         else:
@@ -320,7 +337,6 @@ class algoCodeVisitor(ParseTreeVisitor):
         if ctx.statement():
             for child in ctx.statement():
                 self.visitStatement(child)
-        print('visited code')
                 
 
     # Visit a parse tree produced by algoCodeParser#argument.
@@ -335,7 +351,6 @@ class algoCodeVisitor(ParseTreeVisitor):
         if ctx.argument():
             for child in ctx.argument():
                 arguments.append(self.visitArgument(child))
-        print("visited arguments")
         return arguments
 
     # Visit a parse tree produced by algoCodeParser#statement.
@@ -356,7 +371,6 @@ class algoCodeVisitor(ParseTreeVisitor):
             return self.visitIf_return_statement(ctx.if_return_statement())
         elif ctx.while_statement():
             return self.visitWhile_statement(ctx.while_statement())
-        print("visited statement")
         
 
 
@@ -375,13 +389,11 @@ class algoCodeVisitor(ParseTreeVisitor):
         #sprawdzam index w nawiasach
         index = self.visitExpression(ctx.expression())
 
-        # jeśli istnieje tablica i taki index to pobieram wartość
         if arr_name in self.context[-1]:
-            print("visited array call")
             if index in self.context[-1][arr_name]:
                 return self.context[-1][arr_name].get(index)
             else:
-                return None
+                return [self.context[-1][arr_name][item] for item in self.context[-1][arr_name]]
         else:
             #jak nie to nic? tutaj chyba error by się przydał
             print("Invalid array")

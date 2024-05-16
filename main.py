@@ -125,7 +125,7 @@ for i = 1 to 10 do ->
     text_area_output = tk.Text(frame, height=30, width=60, bg="black", fg="white", insertbackground='white')
     text_area_output.pack(side=tk.RIGHT, padx=15, pady=15, expand=True, fill=tk.BOTH)
 
-    button_save_process = tk.Button(root, text="RESULT", command=save_and_process_code, font=("Helvetica", 12), bg="black", fg="white")
+    button_save_process = tk.Button(root, text="RESULT", command=save_and_process_code, font=("Helvetica", 12), bg="black", fg="black")
     button_save_process.pack(pady=15)
 
     root.mainloop()
@@ -134,9 +134,9 @@ for i = 1 to 10 do ->
 
 
 def main():
-    interface()
+    #interface()
     
-    #basic()
+    basic()
     
 
 if __name__ == '__main__':
