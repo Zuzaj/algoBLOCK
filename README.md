@@ -3,7 +3,7 @@
 ## Założenia programu
 Nasz projekt to prosty język do nauki algorytmów, który ma na celu stworzenie łatwo zrozumiałego środowiska programistycznego. Dzięki prostej składni oraz intuicyjnym słowom kluczowym, użytkownicy będą mogli zrozumieć działanie algorytmów poprzez praktyczne wykorzystanie ich w kodzie.
 1. Planowany wynik działania programu to interpreter języka pseudokodu, umożliwiający użytkownikom pisanie, testowanie i analizowanie działania algorytmów w czasie rzeczywistym.
-2. Planowanym językiem implementacji jest Python.
+2. Planowanym językiem implementacji jest Python. Do stworzenia interface graficznego użyjemy biblioteki GUI w Pythonie - Tkinter.
 3. Planowana realizacja skanera oraz parsera poprzez użycie generatora parserów ANTLR 4.
 
 ## Opis języka
@@ -27,9 +27,13 @@ Dodatkowo, biorąc pod uwagę docelowe zastosowanie naszego języka, zdecydował
 
 ## Uruchomienie 
 1. Pobierz repozytorium na swój komputer.
-2. Zainstaluj paiekt używając polecenia: `pip install antlr4-python3-runtime==4.13.1`
-3. Uruchom plik `main.py`, możesz wcześniej edytować domyślny plik testowy.
-4. Zidentyfikowane tokeny zostaną zapisane do pliku `tokens.txt`, a wynik analizy składniowej (hierarchia) do pliku `formatted_tree.txt`.
+2. Zainstaluj pakiekt używając polecenia: `pip install antlr4-python3-runtime==4.13.1`
+3. Uruchom plik `main.py`. Automatycznie otworzy się wtedy aplikacja okienkowa.
+
+## Instrukcja obsługi
+* Podstawowym działaniem aplikacji jest pisanie kodu w lewym oknie pola tekstowego. Następnie, gdy program jest już gotowy, należy kliknąć przycisk `RESULT`. Wtedy podany kod jest interpretowany i wynik działania jest przedstawiony w prawym oknie. 
+* W górym menu aplikacji jest możliwość skorzystania z opcji `Słowa kluczowe`. Po wybraniu intrukcji, którą chcemy użyć w naszym kodzie jest ona zapisywana do schowka, przez co łatwo można ją stosować w kodzie (`Ctrl+V`).
+* Wynik analizy składniowej można zobaczyć w pliku `formatted_tree.txt`.
 
 ## Tokeny
 - TOK_FUNC : 'function';
