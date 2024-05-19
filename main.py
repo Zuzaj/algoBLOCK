@@ -4,6 +4,7 @@ from compiler.algoCodeParser import algoCodeParser
 from compiler.algoCodeListener import algoCodeListener
 from compiler.algoCodeVisitor import algoCodeVisitor
 from antlr4.tree.Tree import *
+from antlr4.error.ErrorListener import ErrorListener
 
 from antlr4 import ParserRuleContext
 import tkinter as tk
@@ -24,7 +25,12 @@ def save_and_process_code():
         lexer = algoCodeLexer(input_stream)
         stream = CommonTokenStream(lexer)
         parser = algoCodeParser(stream)
+        parser.removeErrorListeners()  
+        parser.addErrorListener(MySyntaxErrorListener()) 
         tree = parser.program()
+        tree_string = tree.toStringTree(recog=parser)
+        with open('formatted_tree.txt', 'w', encoding='utf-8') as file:
+            file.write(tree_string)
         visitor = algoCodeVisitor()
 
         old_stdout = sys.stdout
@@ -115,7 +121,7 @@ for i = 1 to 10 do ->
     options_menu.add_command(label="Instrukcja IF", command=if_code)
     options_menu.add_command(label="Instrukcja IF_ELSE", command=if_else_code)
     options_menu.add_command(label="Pętla WHILE", command=while_code)
-    options_menu.add_command(label="Pętla FOR", command=while_code)
+    options_menu.add_command(label="Pętla FOR", command=for_code)
 
     global text_area_input
     text_area_input = tk.Text(frame, height=30, width=60, bg="black", fg="white", insertbackground='white')
@@ -125,18 +131,20 @@ for i = 1 to 10 do ->
     text_area_output = tk.Text(frame, height=30, width=60, bg="black", fg="white", insertbackground='white')
     text_area_output.pack(side=tk.RIGHT, padx=15, pady=15, expand=True, fill=tk.BOTH)
 
-    button_save_process = tk.Button(root, text="RESULT", command=save_and_process_code, font=("Helvetica", 12), bg="black", fg="black")
+    button_save_process = tk.Button(root, text="RESULT", command=save_and_process_code, font=("Helvetica", 12), bg="black", fg="white")
     button_save_process.pack(pady=15)
 
     root.mainloop()
     
-
+class MySyntaxErrorListener(ErrorListener):
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        raise SyntaxError(f"Error at line {line}, column {column}: {msg}")
 
 
 def main():
-    #interface()
+    interface()
     
-    basic()
+    #basic()
     
 
 if __name__ == '__main__':
