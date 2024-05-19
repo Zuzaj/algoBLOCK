@@ -60,7 +60,7 @@ class algoCodeVisitor(ParseTreeVisitor):
                 self.context[-1][array_name] = {}
                 print("tablica nie zdefiniowana")
                 return None
-            i = 0
+            i = 1
             while len(self.context[-1][array_name]) < index:
                 self.context[-1][array_name][i] = None
                 i += 1
@@ -74,7 +74,7 @@ class algoCodeVisitor(ParseTreeVisitor):
             # If the expression is a variable
             if isinstance(ctx, TerminalNode):
                 return ctx.getText()
-            if ctx.getChildCount() == 1:
+            elif ctx.getChildCount() == 1:
                 if ctx.TOK_VAR():
                     var_name = ctx.TOK_VAR().getText()
                     return self.context[-1].get(var_name, None)
@@ -102,9 +102,9 @@ class algoCodeVisitor(ParseTreeVisitor):
                 right_operand = self.visitExpression(ctx.expression(1))
                 operator = ctx.getChild(1).getText()
                 
-                if left_operand and right_operand:
+                if left_operand != None and right_operand != None:
                     if operator == '+':
-                        return (left_operand + right_operand)
+                        return left_operand + right_operand
                     elif operator == '-':
                         return left_operand - right_operand
                     elif operator == '/':
@@ -121,26 +121,36 @@ class algoCodeVisitor(ParseTreeVisitor):
         def visitVal(right_value):
             if isinstance(right_value, TerminalNode):
                 right_value = right_value.getText()
-                right_operand = self.context[-1].get(right_value)
-                if not right_operand:
-                    right_operand = int(right_value)
+                right_operand = self.context[-1].get(right_value, None)
+                
+                if right_value == '0':
+                    right_operand = 0
+                    return right_operand
+                if right_operand == None:
+                        right_operand = int(right_value)
+                        return right_operand
+                else:
+                    return right_operand
             else:
                 right_operand = self.visitArray_call(right_value)
-            return right_operand
+                return right_operand
 
         def evaluate(operator, right_operand, left_operand):
-            if operator == '==':
-                return left_operand == right_operand
-            elif operator == '!=':
-                return left_operand != right_operand
-            elif operator == '<':
-                return left_operand < right_operand
-            elif operator == '>':
-                return left_operand > right_operand
-            elif operator == '<=':
-                return left_operand <= right_operand
-            elif operator == '>=':
-                return left_operand >= right_operand
+            try:
+                if operator == '==':
+                    return left_operand == right_operand
+                elif operator == '!=':
+                    return left_operand != right_operand
+                elif operator == '<':
+                    return left_operand < right_operand
+                elif operator == '>':
+                    return left_operand > right_operand
+                elif operator == '<=':
+                    return left_operand <= right_operand
+                elif operator == '>=':
+                    return left_operand >= right_operand
+            except:
+                return False   
             
         i = 2
         outputs = []
@@ -302,9 +312,10 @@ class algoCodeVisitor(ParseTreeVisitor):
             # tutaj można dodać obsługę innych funkcji
         elif func_name in self.context[-1]:
             function_definition = self.context[-1][func_name]["params"]
-            if len(arguments) != len(function_definition[0]):
-                print(f"Error: Function '{func_name}' expects {len(function_definition[0])} arguments, but {len(arguments)} were provided.")
-                return None
+            if arguments:
+                if len(arguments) != len(function_definition[0]):
+                    print(f"Error: Function '{func_name}' expects {len(function_definition[0])} arguments, but {len(arguments)} were provided.")
+                    return None
             
             output = self.execute_statements(function_definition[0], arguments, function_definition[1], function_definition[2], func_name)
             if output:
@@ -314,8 +325,9 @@ class algoCodeVisitor(ParseTreeVisitor):
         
     def execute_statements(self, func_args, call_args, func_statements, func_return, f_name):
         # dla kazdej funkcji słownik ze zmiennymi
-        for arg_name, arg_value in zip(func_args, call_args):
-            self.context[-1][f_name][arg_name] = arg_value
+        if call_args:
+            for arg_name, arg_value in zip(func_args, call_args):
+                self.context[-1][f_name][arg_name] = arg_value
         output = None
         for statement_ctx in func_statements:
             self.visitStatement(statement_ctx)
@@ -348,10 +360,11 @@ class algoCodeVisitor(ParseTreeVisitor):
     def visitArguments(self, ctx:algoCodeParser.ArgumentsContext):
         arguments = []
         # Przechodze przez każdy argument
-        if ctx.argument():
-            for child in ctx.argument():
-                arguments.append(self.visitArgument(child))
-        return arguments
+        if ctx != None:
+            if ctx.argument():
+                for child in ctx.argument():
+                    arguments.append(self.visitArgument(child))
+            return arguments
 
     # Visit a parse tree produced by algoCodeParser#statement.
     def visitStatement(self, ctx: algoCodeParser.StatementContext):
@@ -388,6 +401,8 @@ class algoCodeVisitor(ParseTreeVisitor):
         arr_name = ctx.TOK_VAR().getText()
         #sprawdzam index w nawiasach
         index = self.visitExpression(ctx.expression())
+        if index == 0:
+            return 0
 
         if arr_name in self.context[-1]:
             if index in self.context[-1][arr_name]:

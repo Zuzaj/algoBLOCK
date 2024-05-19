@@ -1,11 +1,15 @@
-function INSERTION_SORT(A)
-    for j = 2 to length(A) do ->
+function INSERTION_SORT()
+    for j = 2 to length(A)-1 do ->
        * key = A[j]
        * i = j - 1
         while i > 0 and A[i] > key do ->
           * A[i + 1] = A[i]
           * i = i - 1
          >-
-       * A[i + 1] = key
+       * A[i+1] = key
+       *print(A)
     >-
 endfunction
+
+* INSERTION_SORT()
+* print(A)
