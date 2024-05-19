@@ -6,6 +6,25 @@ Nasz projekt to prosty język do nauki algorytmów, który ma na celu stworzenie
 2. Planowanym językiem implementacji jest Python.
 3. Planowana realizacja skanera oraz parsera poprzez użycie generatora parserów ANTLR 4.
 
+## Opis języka
+Nasz język programowania realizuje podstawowych elementów gramatyki języka programowania takie jak:
+* definiowanie zmiennych liczbowych oraz tablic
+* przypisywanie wartości do zmiennych i elementów tablic
+* iterowanie przy użyciu pętli *for* oraz *while*
+* określanie wartości wyrażenia boolowskiego
+* warunkowe wykonanie bloku kodu dzięki słowow kluczowym *if* oraz *else*
+* wykonywanie działań arytmetycznych na liczbach oraz zmiennych
+* możliwość zwracania wartości przez program lub funkcję dzięki słowu kluczowemu *return*
+
+Dodatkowo, biorąc pod uwagę docelowe zastosowanie naszego języka, zdecydowałyśmy się wprowadzić następujące ułatwienia: 
+* wbudowana funkcja *print(arguments)* wyświetlająca na ekranie argumenty, lub w przypadku podania nazwy tablicy - wszystkie elementy tablicy
+* wbudowana funckja *MIN_INDEX(array)* przyjmująca jako argument tablicę i zwracająca indeks najmniejszego elementu
+* wbudowana funkcja *SWAP_VAR(argument1, argument2)* zamieniająca wartości argumentów
+* wbudowana funkcja *SWAP_ARRAY(A\[index1], A\[index2])* zamieniająca wartości elementów tablicy o wskazanych indeksach
+* wbudowana funkcja *length(array)* przyjmująca jako argument nazwę tablicy i zwracająca liczbę jej elementów
+* możliwość definiowania i wywoływania własnych funkcji
+* zdefiniowana dla użytkownika tablica **A = \[3, 7, 2, 4, 9, 5, 1]** dla usprawnienia testowania algorytmów sortujących
+
 ## Uruchomienie 
 1. Pobierz repozytorium na swój komputer.
 2. Zainstaluj paiekt używając polecenia: `pip install antlr4-python3-runtime==4.13.1`
@@ -111,8 +130,29 @@ expression: TOK_VAR
 ## Pakiety zewnętrzne
 Wykorzystanie ANTLR4 (ANother Tool for Language Recognition) do generowania skanerów i parserów umożliwia szybkie i efektywne tworzenie analizatorów składniowych dla różnorodnych języków programowania oraz specyfikacji formalnych.
 
+
+
 ## Przykłady użycia 
-Proponowane przykłady algorytmów do przetestowania działania języka znajdują się w folderze [algorythms](./algorithms/).
+Przykładowy kod obrazujący budowę języka:
+```
+function INSERTION_SORT()
+    for j = 2 to length(A)-1 do ->
+       * key = A[j]
+       * i = j - 1
+        while i > 0 and A[i] > key do ->
+          * A[i + 1] = A[i]
+          * i = i - 1
+         >-
+       * A[i+1] = key
+       *print(A)
+    >-
+endfunction
+
+* INSERTION_SORT()
+* print(A)
+```
+Inne proponowane przykłady algorytmów do przetestowania działania języka znajdują się w folderze [algorithms](./algorithms/).
+
 
 
 
