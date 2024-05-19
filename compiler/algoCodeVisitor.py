@@ -259,7 +259,13 @@ class algoCodeVisitor(ParseTreeVisitor):
         arguments = self.visitArguments(ctx.arguments())
             # obsługa specjalnych funkcji, na razie tylko print
         if func_name.lower() == 'print':
-            print(arguments)
+            if type(arguments[0]) == dict:
+                output = []
+                for item in arguments[0]:
+                    output.append(arguments[0][item])
+                print(output)
+            else:    
+                print(arguments)
         elif func_name == 'PARTITION':
             pass
         elif func_name == 'FLOOR':
