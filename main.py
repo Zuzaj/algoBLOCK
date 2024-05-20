@@ -2,59 +2,149 @@ from antlr4 import *
 from compiler.algoCodeLexer import algoCodeLexer
 from compiler.algoCodeParser import algoCodeParser
 from compiler.algoCodeListener import algoCodeListener
+from compiler.algoCodeVisitor import algoCodeVisitor
 from antlr4.tree.Tree import *
+from antlr4.error.ErrorListener import ErrorListener
 
 from antlr4 import ParserRuleContext
+import tkinter as tk
+from tkinter import simpledialog
+from antlr4 import FileStream, CommonTokenStream
+import io
+import sys
+from PIL import Image, ImageTk
 
-def print_tokens(lexer):
-    lexer.reset()
-    tokens = []
-    used_token_types = [] 
-    for token in lexer.getAllTokens():
-        token_description = f"{token.text} ({lexer.symbolicNames[token.type]})"
-        tokens.append(token_description)
-        used_token_types.append(lexer.symbolicNames[token.type]) 
-    lexer.reset()
-    tokens_string = '\n'.join(tokens)
-    with open('tokens.txt', 'w', encoding='utf-8') as file:
-        file.write(tokens_string)
+def save_and_process_code():
+    code = text_area_input.get("1.0", tk.END)
 
+    with open('algorithms/algo0.txt', 'w', encoding='utf-8') as file:
+        file.write(code)
 
-class TreePrinterListener(ParseTreeListener):
-    def __init__(self, rule_names):
-        self.rule_names = rule_names
-        self.lines = []
-        self.level = 0
+    try:
+        input_stream = FileStream('algorithms/algo0.txt', encoding='utf-8')
+        lexer = algoCodeLexer(input_stream)
+        stream = CommonTokenStream(lexer)
+        parser = algoCodeParser(stream)
+        parser.removeErrorListeners()  
+        parser.addErrorListener(MySyntaxErrorListener()) 
+        tree = parser.program()
+        tree_string = tree.toStringTree(recog=parser)
+        with open('formatted_tree.txt', 'w', encoding='utf-8') as file:
+            file.write(tree_string)
+        visitor = algoCodeVisitor()
 
-    def enterEveryRule(self, ctx):
-        rule_index = ctx.getRuleIndex()
-        rule_name = self.rule_names[rule_index] if self.rule_names else "Unknown rule"
-        self.lines.append(' ' * 2 * self.level + rule_name)
-        self.level += 1
+        old_stdout = sys.stdout
+        redirected_output = io.StringIO()
+        sys.stdout = redirected_output
+        visitor.visitProgram(tree)
 
-    def exitEveryRule(self, ctx):
-        self.level -= 1
+        sys.stdout = old_stdout
+        output = redirected_output.getvalue()
+        text_area_output.delete("1.0", tk.END)
+        text_area_output.insert("1.0", output)
+    except Exception as e:
+        text_area_output.delete("1.0", tk.END)
+        text_area_output.insert("1.0", str(e))
 
-    def getFormattedTree(self):
-        return "\n".join(self.lines)
-
-
-def main():
-    #tu możesz wybrać inny plik do testowania z folderu algorithms lub przesłać swój plik do folderu, a następnie wpisać jesgo nazwę
-    input_stream = FileStream('algorithms/algo13.txt', encoding='utf-8')
+def basic():
+    input_stream = FileStream('algorithms/algo0.txt', encoding='utf-8')
     lexer = algoCodeLexer(input_stream)
-    print_tokens(lexer)
     stream = CommonTokenStream(lexer)
     parser = algoCodeParser(stream)
     tree = parser.program() 
+    print(tree.toStringTree(recog=parser))
 
-    printer = TreePrinterListener(parser.ruleNames)
-    walker = ParseTreeWalker()
-    walker.walk(printer, tree)
-    formatted_tree = printer.getFormattedTree()
-    print(formatted_tree)
-    with open('formatted_tree.txt', 'w', encoding='utf-8') as file:
-        file.write(formatted_tree)
+    visitor = algoCodeVisitor()
+    visitor.visitProgram(tree)
+
+def interface():
+    def function_def_code():
+        root.clipboard_clear() 
+        code = """
+function myFunction(arg1)
+    
+endfunction
+"""
+        root.clipboard_append(code) 
+
+    def if_code():
+        root.clipboard_clear() 
+        code = """
+if  then ->
+    
+>-
+"""
+        root.clipboard_append(code) 
+
+    def if_else_code():
+        root.clipboard_clear() 
+        code = """
+if  then ->
+    
+>- else ->
+    
+>-
+"""
+        root.clipboard_append(code) 
+
+    def while_code():
+        root.clipboard_clear() 
+        code = """
+while  do ->
+    
+>-
+"""
+        root.clipboard_append(code) 
+
+    def for_code():
+        root.clipboard_clear() 
+        code = """
+for i = 1 to 10 do ->
+    
+>-
+"""
+        root.clipboard_append(code) 
+        
+    root = tk.Tk()
+    root.title("AlgoBlock")
+    root.configure(bg='light blue')
+
+
+    frame = tk.Frame(root, bg='light blue')
+    frame.pack(expand=True, fill=tk.BOTH)
+
+    menu_bar = tk.Menu(root)
+    root.config(menu=menu_bar)
+    options_menu = tk.Menu(menu_bar, tearoff=0)
+    menu_bar.add_cascade(label="Słowa kluczowe", menu=options_menu)
+    options_menu.add_command(label="Definicja funkcji", command=function_def_code)
+    options_menu.add_command(label="Instrukcja IF", command=if_code)
+    options_menu.add_command(label="Instrukcja IF_ELSE", command=if_else_code)
+    options_menu.add_command(label="Pętla WHILE", command=while_code)
+    options_menu.add_command(label="Pętla FOR", command=for_code)
+
+    global text_area_input
+    text_area_input = tk.Text(frame, height=30, width=60, bg="black", fg="white", insertbackground='white')
+    text_area_input.pack(side=tk.LEFT, padx=15, pady=15, expand=True, fill=tk.BOTH)
+
+    global text_area_output
+    text_area_output = tk.Text(frame, height=30, width=60, bg="black", fg="white", insertbackground='white')
+    text_area_output.pack(side=tk.RIGHT, padx=15, pady=15, expand=True, fill=tk.BOTH)
+
+    button_save_process = tk.Button(root, text="RESULT", command=save_and_process_code, font=("Helvetica", 12), bg="black", fg="white")
+    button_save_process.pack(pady=15)
+
+    root.mainloop()
+    
+class MySyntaxErrorListener(ErrorListener):
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        raise SyntaxError(f"Error at line {line}, column {column}: {msg}")
+
+
+def main():
+    interface()
+    
+    #basic()
     
 
 if __name__ == '__main__':
