@@ -1,5 +1,6 @@
 # Generated from algoCode.g4 by ANTLR 4.13.1
 import re
+import time
 from antlr4 import ParseTreeVisitor
 from antlr4 import *
 if "." in __name__:
@@ -46,7 +47,7 @@ class algoCodeVisitor(ParseTreeVisitor):
         self.context[-1][function_name] = {}
         self.context[-1][function_name]["params"] = (arguments, statements, return_statement)
 
-        print("visited function def")
+        
 
     
     
@@ -235,10 +236,16 @@ class algoCodeVisitor(ParseTreeVisitor):
 
     def visitWhile_statement(self, ctx:algoCodeParser.While_statementContext):
         condition = self.visitBool_expression(ctx.bool_expression())
+        start_time = time.time()
+        max_duration = 5
         while condition:
+            if time.time() - start_time > max_duration:
+                print("RuntimeError")
+                raise RuntimeError("Time limit exceeded for while loop execution")
             for statement in ctx.statement():
                 self.visitStatement(statement)
             condition = self.visitBool_expression(ctx.bool_expression())
+            
 
         
         
@@ -265,7 +272,9 @@ class algoCodeVisitor(ParseTreeVisitor):
                     output.append(arguments[0][item])
                 print(output)
             else:    
-                print(arguments)
+                #print(arguments)
+                for arg in arguments:
+                    print(arg)
         elif func_name == 'PARTITION':
             pass
         elif func_name == 'FLOOR':
